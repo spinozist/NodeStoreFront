@@ -22,7 +22,7 @@ connection.connect(function (err) {
 
 
 function showInventory() {
-    console.log(`***THIS IS WHAT WE'VE GOT***`)
+    console.log(`\n***THIS IS WHAT WE'VE GOT***`)
     console.log(`id || item || price || stock`)
     var query = "SELECT * FROM inventory";
     connection.query(query, function (err, res) {
@@ -91,9 +91,8 @@ function enterStore() {
                         }
                     ])
                     .then(function (answer) {
-                        console.log(`You'd like ${answer.itemQuantity} of item ${answer.itemID}`);
+                        console.log(`\nYou'd like ${answer.itemQuantity} of item ${answer.itemID}`);
                         buyItem(answer.itemID, answer.itemQuantity);
-                        logPurchases(answer.itemID, answer.itemQuantity)
                     })
             } else {
                 restartPrompt();
@@ -107,10 +106,11 @@ function buyItem(itemID, amount) {
         function (error) {
             if (error) throw err;
             if (amount > 1) {
-                console.log('Items purchased successfully!');
+                console.log('\nItems purchased successfully!');
             } else {
-                console.log('Item purchased successfully!');
+                console.log('\nItem purchased successfully!');
             }
+            logPurchases(itemID, amount)
             showInventory();
         }
     )
@@ -166,13 +166,8 @@ function restartPrompt() {
         })
 }
 
-// var query = "SELECT top5000albums.year, top5000albums.album, top5000albums.position, top5000songs.song, top5000songs.artist ";
-//   query += "FROM top5000albums INNER JOIN top5000songs ON (top5000albums.artist = top5000songs.artist AND top5000albums.year ";
-//   query += "= top5000songs.year) WHERE (top5000albums.artist = ? AND top5000songs.artist = ?) ORDER BY top5000albums.year "
-
-
 function showSales() {
-    console.log(`******SALES******`);
+    console.log(`\n******SALES******`);
     console.log(`id // item // #`);
     var query = `
     SELECT item_id, id, quantity, name, price, department 
@@ -183,6 +178,7 @@ function showSales() {
         for (var i = 0; i < res.length; i++) {
             console.log(`${res[i].item_id} // ${res[i].department} // ${res[i].name} // ${res[i].quantity} @ ${res[i].price} = $${res[i].quantity * res[i].price}`);
         }
+
         departmentSales();
     });
 };
@@ -200,11 +196,37 @@ function departmentSales() {
         })
         .then(function (answer) {
             if (answer.departmentSales === "Yes") {
-                console.log(`  DEPARTMENT SALES**`);
-                console.log(`  Dept || Total Sales`)
-                //Function to show department totals
+                console.log(`\nUNDER CONSTRUCTION`);
+                restartPrompt();
 
+                // console.log(`  DEPARTMENT SALES**`);
+                // console.log(`  Dept || Total Sales`)
+
+                // var query = `
+                // SELECT department, sum(price), item_id, id 
+                // FROM sales 
+                // LEFT JOIN inventory ON sales.item_id = inventory.id
+                // GROUP BY department;
+                // `;
+                // connection.query(query, function (err, res) {
+                //     for (var i = 0; i < res.length; i++) {
+                //         console.log(`${res[i].department} // ${res[i].sum(price)}`);
+                //     }
+                //     restartPrompt();
+                //     //Function to show department totals
+                // })
+            } else {
+                restartPrompt();  
             }
-            restartPrompt();
         })
 }
+
+// function departmentLog(department, saleTotal) {
+//     connection.query(
+//         `INSERT INTO department (department,saleTotal) VALUES (${department},${saleTotal});`,
+//         function () {
+//             // if (error) throw err;
+//             // console.log(`Sale logged`);
+//         }
+//     )
+// }
