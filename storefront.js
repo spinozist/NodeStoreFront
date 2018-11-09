@@ -101,19 +101,32 @@ function enterStore() {
 };
 
 function buyItem(itemID, amount) {
+
     connection.query(
-        `UPDATE inventory SET in_stock = in_stock - ${amount} WHERE id=${itemID};`,
-        function (error) {
+        `SELECT in_stock, id FROM inventory WHERE id=${itemID};`,
+        function (error, res) {
             if (error) throw err;
-            if (amount > 1) {
-                console.log('\nItems purchased successfully!');
+            if (amount > res.in_stock) {
+                console.log(`We don't enough in stock. Please try another selection.`);
+                enterStore();
             } else {
-                console.log('\nItem purchased successfully!');
+                connection.query(
+                    `UPDATE inventory SET in_stock = in_stock - ${amount} WHERE id=${itemID};`,
+                    function (error) {
+                        if (error) throw err;
+                        if (amount > 1) {
+                            console.log('\nItems purchased successfully!');
+                        } else {
+                            console.log('\nItem purchased successfully!');
+                        }
+                        logPurchases(itemID, amount)
+                        showInventory();
+                    }
+                )
             }
-            logPurchases(itemID, amount)
-            showInventory();
+
         }
-    )
+    );
 }
 
 function logPurchases(itemID, amount) {
@@ -175,6 +188,7 @@ function showSales() {
     LEFT JOIN inventory ON sales.item_id = inventory.id;
     `;
     connection.query(query, function (err, res) {
+
         for (var i = 0; i < res.length; i++) {
             console.log(`${res[i].item_id} // ${res[i].department} // ${res[i].name} // ${res[i].quantity} @ ${res[i].price} = $${res[i].quantity * res[i].price}`);
         }
@@ -216,7 +230,7 @@ function departmentSales() {
                 //     //Function to show department totals
                 // })
             } else {
-                restartPrompt();  
+                restartPrompt();
             }
         })
 }
