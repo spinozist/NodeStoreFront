@@ -27,7 +27,7 @@ function showInventory() {
     var query = "SELECT * FROM inventory";
     connection.query(query, function (err, res) {
         for (var i = 0; i < res.length; i++) {
-            console.log(` ${res[i].id} // ${res[i].name} // ${res[i].price} // ${res[i].in_stock}`);
+            console.log(` ${res[i].id} || ${res[i].name} || $${res[i].price} || ${res[i].in_stock}`);
         }
         if (res) {
             enterStore();
@@ -106,9 +106,10 @@ function buyItem(itemID, amount) {
         `SELECT in_stock, id FROM inventory WHERE id=${itemID};`,
         function (error, res) {
             if (error) throw err;
-            if (amount > res.in_stock) {
-                console.log(`We don't enough in stock. Please try another selection.`);
-                enterStore();
+            console.log(res);
+            if (amount > res[0].in_stock) {
+                console.log(`\nWe don't enough in stock. Please try another selection.`);
+                showInventory();
             } else {
                 connection.query(
                     `UPDATE inventory SET in_stock = in_stock - ${amount} WHERE id=${itemID};`,
@@ -210,7 +211,7 @@ function departmentSales() {
         })
         .then(function (answer) {
             if (answer.departmentSales === "Yes") {
-                console.log(`\nUNDER CONSTRUCTION`);
+                console.log(`\nUNDER CONSTRUCTION\n`);
                 restartPrompt();
 
                 // console.log(`  DEPARTMENT SALES**`);
