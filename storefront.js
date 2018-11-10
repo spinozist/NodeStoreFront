@@ -17,6 +17,7 @@ var connection = mysql.createConnection({
 
 connection.connect(function (err) {
     if (err) throw err;
+    console.log(`\n***Welcome to THE STORE***\n`)
     role();
 });
 
@@ -91,7 +92,7 @@ function enterStore() {
                         }
                     ])
                     .then(function (answer) {
-                        console.log(`\nYou'd like ${answer.itemQuantity} of item ${answer.itemID}`);
+                        console.log(`\nYou'd like ${answer.itemQuantity} of item ${answer.itemID}.`);
                         buyItem(answer.itemID, answer.itemQuantity);
                     })
             } else {
@@ -106,7 +107,7 @@ function buyItem(itemID, amount) {
         `SELECT in_stock, id FROM inventory WHERE id=${itemID};`,
         function (error, res) {
             if (error) throw err;
-            console.log(res);
+            // console.log(res);
             if (amount > res[0].in_stock) {
                 console.log(`\nWe don't enough in stock. Please try another selection.`);
                 showInventory();
